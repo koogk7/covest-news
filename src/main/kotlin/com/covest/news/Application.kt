@@ -1,53 +1,46 @@
 package com.covest.news
 
+import com.covest.news.adapter.GlobalMonitorNewsAdapter
+import com.covest.news.adapter.TelegramAdapter
+import io.github.cdimascio.dotenv.dotenv
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.ExperimentalSerializationApi
+import java.time.LocalDateTime
+
 
 suspend fun main() {
+    val env = dotenv()
+
     val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json()
         }
     }
-    val response: HttpResponse = client.post("http://globalmonitor.einfomax.co.kr/apis/usa/news/getnewsall")
-    println(response.bodyAsText())
+    val adapter = GlobalMonitorNewsAdapter(client)
+    val telegramAdapter = TelegramAdapter(client, env["TELEGRAM_TOKEN"]!!, env["TELEGRAM_CHAT_ID"]!!)
 
-    val newsResponse: NewsResponse = client.post("http://globalmonitor.einfomax.co.kr/apis/usa/news/getnewsall").body()
-    println(newsResponse)
+    val titleAndDate = adapter.getAllNewsHeadline().map { it.title + " - " + it.updatedAt }
+    val message = titleAndDate.joinToString(
+        prefix = "\n=====================\n",
+        separator = "\n=====================\n",
+    )
+    println(telegramAdapter.send(message))
+    println(message)
+    /*
+        TODO
+        1. 중복알림 제거하기 -> 아마 디비를 써야하지 않을까?
+        2. 토큰 값 외부 주입받기 (for 보안)
+        3. 서버에 올려두고 주기적으로 뉴스보내도록 하기
+        4. 해드라인 정보로 공부할만한 키워드 추출하기 with gpt
+     */
 }
 
-@Serializable
-data class NewsResponse(
-    val total: Int,
-    val data: List<NewsItem>
-)
-
-@Serializable
-data class NewsItem(
-    @SerialName("_id")
+data class NewsHeadline(
     val id: String,
-    @SerialName("SendDateTime")
-    val sendDateTime: String,
-    @SerialName("Credit")
-    val credit: String? = null,
-    @SerialName("Category.@name")
-    val categoryName: String,
-    @SerialName("Title")
     val title: String,
-    @SerialName("viewcount")
-    val viewCount: Int,
-    @SerialName("UpdateDateTime")
-    val updateDateTime: String,
-    @SerialName("Writer")
+    val updatedAt: LocalDateTime,
     val writer: String,
-    @SerialName("Source")
     val source: String
 )
