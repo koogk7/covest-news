@@ -7,6 +7,8 @@ plugins {
 val kotlin_version = "1.5.31"
 val ktor_version: String = "2.3.10"
 val logback_version = "1.2.6"
+val exposed_version = "0.41.1"
+val h2_version = "2.2.224"
 
 dependencies {
     implementation("io.ktor:ktor-client-core:$ktor_version")
@@ -25,6 +27,14 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    // exposed
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("com.h2database:h2:$h2_version")
+    implementation("mysql:mysql-connector-java:8.0.19")
+
 
     implementation (kotlin("stdlib-jdk8"))
 }
