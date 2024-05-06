@@ -25,3 +25,12 @@ replay_pid*
 
 # .env
 *.env
+
+# IntelliJ project files
+.idea/*
+*.iml
+out/
+build/
+gen### Gradle template
+.gradle
+/build/
