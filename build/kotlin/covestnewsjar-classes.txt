@@ -1,1 +1,0 @@
-/Users/pnu/git/covest-news/build/classes/kotlin/main/com/covest/news/ApplicationKt$main$1.class:/Users/pnu/git/covest-news/build/classes/kotlin/main/com/covest/news/ApplicationKt$main$2.class:/Users/pnu/git/covest-news/build/classes/kotlin/main/com/covest/news/ApplicationKt.class
