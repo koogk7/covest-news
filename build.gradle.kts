@@ -32,6 +32,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.34.1")
     implementation("com.h2database:h2:$h2_version")
     implementation("mysql:mysql-connector-java:8.0.19")
 

@@ -1,0 +1,19 @@
+### Create a new Balance
+POST http://localhost:8080/balances
+Content-Type: application/json
+
+{
+  "id": 0,
+  "account": "123456",
+  "productId": "P001",
+  "productName": "Product Name",
+  "qty": 100.00,
+  "buyAmount": {
+    "krw": 1000000.00,
+    "foreign": 2000.00,
+    "currency": "USD"
+  }
+}
+
+### Read a Balance by ID
+GET http://localhost:8080/balances/1

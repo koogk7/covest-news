@@ -1,5 +1,6 @@
 package com.covest.news.config
 
+import com.covest.news.domain.balance.models.BalanceTable
 import com.covest.news.domain.examples.models.Articles
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
@@ -16,6 +17,7 @@ object DatabaseSingleton {
 
         transaction(database) {
             SchemaUtils.create(Articles)
+            SchemaUtils.create(BalanceTable)
         }
     }
 }
