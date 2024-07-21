@@ -28,6 +28,7 @@ class NaverApartmentAdapter(
         return articles.map {
             ApartmentListing(
                 id = it.articleNumber,
+                name = it.complexName,
                 tradeType = it.tradeType,
                 dongName = it.dongName,
                 supplySpace = it.spaceInfo.supplySpace,

@@ -4,6 +4,7 @@ import com.covest.news.domain.estate.ApartmentListingFilter
 import com.covest.news.domain.estate.ApartmentListingFilter.*
 import com.covest.news.domain.estate.ApartmentListingFinder
 import com.covest.news.domain.estate.NaverApartmentAdapter
+import com.covest.news.domain.estate.toTsv
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -28,13 +29,31 @@ class ApartmentRouter(
 
             val filter = tradeType?.let {
                 ApartmentListingFilter(
-                tradeType = TradeType.valueOf(it),
-                spaceType = SpaceType.of(queryParams["spaceType"])
-            )
+                    tradeType = TradeType.valueOf(it),
+                    spaceType = SpaceType.of(queryParams["spaceType"])
+                )
             }
             val result = apartmentListingFinder.getAll(apartName, filter)
             call.respond(result)
         }
+
+        get("/apartment-listings/{apartName}/tsv") {
+            val apartName = call.parameters["apartName"]
+                ?: return@get call.respondText("Invalid apartName", status = HttpStatusCode.BadRequest)
+            val queryParams = call.request.queryParameters
+            val tradeType = queryParams["tradeType"]
+
+
+            val filter = tradeType?.let {
+                ApartmentListingFilter(
+                    tradeType = TradeType.valueOf(it),
+                    spaceType = SpaceType.of(queryParams["spaceType"])
+                )
+            }
+            val result = apartmentListingFinder.getAll(apartName, filter)
+            call.respond(result.toTsv())
+        }
+
     }
 
     companion object {
