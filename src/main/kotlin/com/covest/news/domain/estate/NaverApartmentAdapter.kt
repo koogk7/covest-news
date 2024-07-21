@@ -28,6 +28,7 @@ class NaverApartmentAdapter(
         return articles.map {
             ApartmentListing(
                 id = it.articleNumber,
+                tradeType = it.tradeType,
                 dongName = it.dongName,
                 supplySpace = it.spaceInfo.supplySpace,
                 exclusiveSpace = it.spaceInfo.exclusiveSpace,
@@ -37,7 +38,7 @@ class NaverApartmentAdapter(
                     ApartmentListingFilter.TradeType.매매.naver -> it.priceInfo.dealPrice.toLong()
                     ApartmentListingFilter.TradeType.전세.naver -> it.priceInfo.warrantyPrice.toLong()
                     else -> it.priceInfo.dealPrice.toLong()
-                        .also { i -> log.error { "Unknown tradeType ${it.tradeType}" } }
+                        .also { i -> log.warn { "Unknown tradeType ${it.tradeType}" } }
                 },
             )
         }.filter { filter?.spaceType?.isContain(it.supplySpace) ?: true }

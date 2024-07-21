@@ -1,8 +1,8 @@
 package com.covest.news
 
 import com.covest.news.config.DatabaseSingleton
-import com.covest.news.plugins.configureCustomerRouting
 import com.covest.news.plugins.configureSerialization
+import com.covest.news.routes.estate.ApartmentRouter
 import com.covest.news.routes.example.balanceRouting
 import com.covest.news.routes.example.customerRouting
 import io.github.cdimascio.dotenv.dotenv
@@ -20,8 +20,12 @@ fun Application.module() {
         password = env["DATABASE_PASSWORD"]!!,
     )
     configureSerialization()
+
+    val apartmentRouter = ApartmentRouter.create()
+
     routing {
         customerRouting()
         balanceRouting()
+        with(apartmentRouter) { route() }
     }
 }
