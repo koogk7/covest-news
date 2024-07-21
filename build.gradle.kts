@@ -36,6 +36,9 @@ dependencies {
     implementation("com.h2database:h2:$h2_version")
     implementation("mysql:mysql-connector-java:8.0.19")
 
+    // log
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
+
 
     implementation (kotlin("stdlib-jdk8"))
 }

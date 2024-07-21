@@ -1,16 +1,48 @@
 package com.covest.news.domain.estate
 
+import com.covest.news.common.CollectionExtension.emptyWithLog
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import mu.KotlinLogging
 
 
 class NaverApartmentAdapter(
     private val client: HttpClient
 ) {
+    private val log = KotlinLogging.logger { }
+
+    suspend fun getAllListing(
+        apartmentName: String,
+        filter: ApartmentListingFilter? = null,
+    ): List<ApartmentListing> {
+        val complexId = getComplexId(apartmentName)
+            ?: return emptyWithLog("${apartmentName} complexId is null")
+
+        val articles = getArticles(complexId, filter)
+            ?: return emptyWithLog("${apartmentName} articles is null")
+
+        return articles.map {
+            ApartmentListing(
+                id = it.articleNumber,
+                dongName = it.dongName,
+                supplySpace = it.spaceInfo.supplySpace,
+                exclusiveSpace = it.spaceInfo.exclusiveSpace,
+                description = it.articleDetail.articleFeatureDescription,
+                floorInfo = it.articleDetail.floorInfo ?: "정보없음",
+                price = when (it.tradeType) {
+                    ApartmentListingFilter.TradeType.매매.naver -> it.priceInfo.dealPrice.toLong()
+                    ApartmentListingFilter.TradeType.전세.naver -> it.priceInfo.warrantyPrice.toLong()
+                    else -> it.priceInfo.dealPrice.toLong()
+                        .also { i -> log.error { "Unknown tradeType ${it.tradeType}" } }
+                },
+            )
+        }.filter { filter?.spaceType?.isContain(it.supplySpace) ?: true }
+    }
+
     suspend fun getComplexId(apartmentName: String): String? {
         val encodedApartmentName = java.net.URLEncoder.encode(apartmentName, "UTF-8")
         val url = "https://m.land.naver.com/search/result/$encodedApartmentName"
@@ -20,9 +52,16 @@ class NaverApartmentAdapter(
         return locationHeader?.split("/")?.getOrNull(3)?.split("?")?.getOrNull(0)
     }
 
-    suspend fun getArticles(complexId: String): List<RepresentativeArticleInfo>? {
-        val url =
-            "https://fin.land.naver.com/front-api/v1/complex/article/list?complexNumber=$complexId&pyeongTypeNumbers=4&tradeTypes=A1&size=20&userChannelType=MOBILE&page=0"
+    suspend fun getArticles(
+        complexId: String,
+        filter: ApartmentListingFilter? = null,
+    ): List<RepresentativeArticleInfo>? {
+        val size = 100
+        var url = "https://fin.land.naver.com/front-api/v1/complex/article/list?complexNumber=$complexId&size=${size}&userChannelType=MOBILE&page=0"
+        if (filter != null) {
+           url += "&tradeTypes=${filter.tradeType.naver}"
+        }
+        log.info { "request url ${url}" }
 
         val response: HttpResponse = client.get(url) {
             headers {
@@ -36,7 +75,13 @@ class NaverApartmentAdapter(
         }
 
         val articlesResponse: ArticlesResponse = response.body()
-        return if (articlesResponse.isSuccess) articlesResponse.result.list.map { it.representativeArticleInfo } else null
+        if (articlesResponse.isSuccess.not()) {
+            log.error { "Failed to get articles. ${complexId}, response: $articlesResponse"  }
+            return null
+        }
+
+        return articlesResponse.result.list
+            .map { it.representativeArticleInfo }
     }
 }
 

@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 
 suspend fun main() {
-    pushNewsToTelegram()
+    fetchApartPrices()
     /*
         TODO
         1. 중복알림 제거하기 -> 아마 디비를 써야하지 않을까?
@@ -20,7 +20,7 @@ suspend fun main() {
      */
 }
 
-private suspend fun pushNewsToTelegram() {
+private suspend fun fetchApartPrices() {
     val env = dotenv()
 
     val client = HttpClient(CIO) {

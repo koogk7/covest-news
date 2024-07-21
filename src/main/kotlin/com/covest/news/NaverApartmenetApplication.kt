@@ -1,5 +1,8 @@
 package com.covest.news
 
+import com.covest.news.domain.estate.ApartmentListingFilter
+import com.covest.news.domain.estate.ApartmentListingFilter.*
+import com.covest.news.domain.estate.ApartmentListingFinder
 import com.covest.news.domain.estate.NaverApartmentAdapter
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.client.*
@@ -10,10 +13,10 @@ import kotlinx.serialization.json.Json
 
 
 suspend fun main() {
-    pushNewsToTelegram()
+    fetchApartPrices()
 }
 
-private suspend fun pushNewsToTelegram() {
+private suspend fun fetchApartPrices() {
     val env = dotenv()
 
     val client = HttpClient(CIO) {
@@ -25,10 +28,8 @@ private suspend fun pushNewsToTelegram() {
         }
     }
     val adapter = NaverApartmentAdapter(client)
-    val result = adapter.getComplexId("창신쌍용2단지")
+    val finder = ApartmentListingFinder(adapter)
+    val filter = ApartmentListingFilter(tradeType = TradeType.전세, spaceType = SpaceType._30평_35평)
+    val result = finder.getAll("창신쌍용2단지", filter)
     println(result)
-
-    adapter.getArticles(result!!).let {
-        println(it)
-    }
 }
