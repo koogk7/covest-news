@@ -5,7 +5,7 @@ data class ApartmentListingFilter(
     val spaceType: SpaceType,
 ) {
     enum class TradeType(val naver: String) {
-        매매("A01"),
+        매매("A1"),
         전세("B1");
 
         companion object {
