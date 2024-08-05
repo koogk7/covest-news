@@ -50,7 +50,9 @@ class ApartmentRouter(
                     spaceType = SpaceType.of(queryParams["spaceType"])
                 )
             }
-            val result = apartmentListingFinder.getAll(apartName, filter)
+            val result = apartmentListingFinder
+                .getAll(apartName, filter)
+                .sortedBy { it.price }
             call.respond(result.toTsv())
         }
 

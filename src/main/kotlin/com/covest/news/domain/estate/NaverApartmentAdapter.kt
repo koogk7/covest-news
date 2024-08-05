@@ -33,7 +33,7 @@ class NaverApartmentAdapter(
                 dongName = it.dongName,
                 supplySpace = it.spaceInfo.supplySpace,
                 exclusiveSpace = it.spaceInfo.exclusiveSpace,
-                description = it.articleDetail.articleFeatureDescription,
+                description = it.articleDetail.articleFeatureDescription ?: "정보없음",
                 floorInfo = it.articleDetail.floorInfo ?: "정보없음",
                 price = when (it.tradeType) {
                     ApartmentListingFilter.TradeType.매매.naver -> it.priceInfo.dealPrice.toLong()
@@ -149,8 +149,8 @@ data class BrokerInfo(
 @Serializable
 data class ArticleDetail(
     val direction: String? = null,
-    val articleFeatureDescription: String,
-    val directTrade: Boolean,
+    val articleFeatureDescription: String? = null,
+    val directTrade: Boolean? = null,
     val floorInfo: String? = null,
 )
 
