@@ -30,6 +30,16 @@ private suspend fun fetchApartPrices() {
     val adapter = NaverApartmentAdapter(client)
     val finder = ApartmentListingFinder(adapter)
     val filter = ApartmentListingFilter(tradeType = TradeType.전세, spaceType = SpaceType._30평_35평)
-    val result = finder.getAll("창신쌍용2단지", filter)
+    val apartName = "창신쌍용2단지"
+    val result = finder.getAll(apartName, filter)
     println(result)
+
+    println("=====================================")
+
+//    val complexId = adapter.getComplexId(apartName)
+//    val realPrices = adapter.getAllRealPrice("3375")
+//    println(realPrices)
+
+    val spaceAreas = adapter.getAllSpaceArea("3375")
+    println(spaceAreas)
 }
